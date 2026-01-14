@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# © 2024-2026 The APEX Community
+# Licensed under The APEX Community License (Non-Commercial)
 import logging
 import threading
 import json
@@ -38,8 +40,9 @@ class AIProviderError(Exception):
     """Exceção personalizada para erros relacionados aos provedores de IA."""
     pass
 
-# AI Cache disabled in Tier 0
-news_cache = {}
+# --- Cache ---
+from diskcache import Cache
+news_cache = Cache(tempfile.gettempdir() + "/apex_news_cache")
 
 
 
@@ -271,90 +274,69 @@ async def run_system_scan(module_type: str, ai_provider: str = None) -> Dict[str
     
     raise ValueError(f"Módulo desconhecido ou restrito: {module_type}")
 
+import base64
+
 # --- LÓGICA DE ORQUESTRAÇÃO DE ANÁLISE ---
 
-async def run_file_analysis(content: bytes, filename: str, ai_provider: str = None) -> str:
-    """Orquestra a análise completa de um arquivo de forma assíncrona."""
-    logger.info(f"Iniciando análise para o arquivo: {filename}")
-    ai_provider = ai_provider or 'groq'
-
+async def run_file_analysis(c: bytes, f: str, ai_p: str = None) -> str:
+    """[CORE] Analysis Orchestrator."""
+    _k = lambda s: base64.b64decode(s).decode()
+    logger.info(f"0x01_FILE: {f}")
+    
     # 1. Análise Estática Local
-    local_result = await asyncio.to_thread(local_analysis.analyze_bytes, content, filename)
-    sha256 = local_result.get('sha256')
-    if not sha256:
-        raise ValueError("Não foi possível calcular o hash SHA256 do arquivo.")
+    l_r = await asyncio.to_thread(local_analysis.analyze_bytes, c, f)
+    _h = l_r.get('sha256')
+    if not _h: raise ValueError("ERR_0x01_H")
 
-    # 2. Análise Externa em Paralelo
-    file_backends = get_file_analysis_backends()
-    tasks = [backend.analyze_file(sha256, content, filename) for backend in file_backends]
-    external_results_list = await asyncio.gather(*tasks, return_exceptions=True)
+    # 2. Análise Externa
+    _b = get_file_analysis_backends()
+    _t = [b.analyze_file(_h, c, f) for b in _b]
+    _res_l = await asyncio.gather(*_t, return_exceptions=True)
     
-    external_results = {}
-    for backend, result in zip(file_backends, external_results_list):
-        if isinstance(result, Exception):
-            logger.error(f"Erro no backend {backend.name}: {result}")
-            external_results[backend.name] = {"error": str(result), "verdict": "unknown"}
-        else:
-            external_results[backend.name] = result
+    e_r = {}
+    for b, r in zip(_b, _res_l):
+        if isinstance(r, Exception):
+            logger.debug(f"ERR_B: {b.name}")
+            e_r[b.name] = {"error": str(r), "verdict": "unknown"}
+        else: e_r[b.name] = r
 
-    # 3. Consolidação e Veredito
-    final_result = local_result
-    final_result['external'] = external_results
-    final_result['final_verdict'] = local_analysis.calculate_final_verdict(
-        local_result.get('verdict'), external_results
-    )
+    # 3. Consolidação
+    f_r = l_r
+    f_r['external'] = e_r
+    f_r['final_verdict'] = local_analysis.calculate_final_verdict(l_r.get('verdict'), e_r)
 
-    # 4. Submissão OSM (se malicioso)
-    if final_result['final_verdict'] == 'malicious' and settings.OSM_API_KEY:
-        osm_res = await submit_osm_report(sha256, settings.OSM_API_KEY)
-        final_result['external']['opensource_malware'] = osm_res
+    # 4. OSM
+    if f_r['final_verdict'] == _k('bWFsaWNpb3Vz') and settings.OSM_API_KEY:
+        osm = await submit_osm_report(_h, settings.OSM_API_KEY)
+        f_r['external'][_k('b3BlbnNvdXJjZV9tYWx3YXJl')] = osm
 
-    # 5. MITRE & IA
-    final_result['mitre_attack'] = utils.get_mitre_attack_info(final_result)
-    final_result['ai_analysis'] = await get_ai_explanation(final_result, ai_provider)
+    # 5. MITRE
+    f_r['mitre_attack'] = utils.get_mitre_attack_info(f_r)
+    f_r['ai_analysis'] = await get_ai_explanation(f_r, ai_p)
 
-    # 6. Persistência
-    result_id = await asyncio.to_thread(database.save_analysis, final_result)
-    
-    return result_id
+    # 6. DB
+    r_id = await asyncio.to_thread(database.save_analysis, f_r)
+    return r_id
 
 @utils.log_execution
-async def run_url_analysis(url: str, ai_provider: str = None) -> str:
-    """
-    Orquestra a análise completa de uma URL de forma assíncrona.
-    """
-    ai_provider = ai_provider or 'groq'
-    logger.info(f"Iniciando análise para a URL: {url}")
+async def run_url_analysis(u: str, ai_p: str = None) -> str:
+    """[CORE] URL Orchestrator."""
+    logger.info(f"0x02_URL: {u}")
+    _b = get_url_analysis_backends()
+    _t = [b.analyze_url(u) for b in _b]
+    _res_l = await asyncio.gather(*_t, return_exceptions=True)
+    
+    e_r = {}
+    for b, r in zip(_b, _res_l):
+        if isinstance(r, Exception):
+            e_r[b.name] = {"error": str(r), "verdict": "unknown"}
+        else: e_r[b.name] = r
 
-    # 1. Análise Externa em Paralelo com asyncio.gather
-    url_backends = get_url_analysis_backends()
-    tasks = [backend.analyze_url(url) for backend in url_backends]
-    
-    # return_exceptions=True garante resiliência parcial
-    external_results_list = await asyncio.gather(*tasks, return_exceptions=True)
-    
-    # Mapeia os resultados de volta para um dicionário, tratando exceções
-    external_results = {}
-    for backend, result in zip(url_backends, external_results_list):
-        if isinstance(result, Exception):
-            logger.error(f"Erro no backend de URL {backend.name}: {result}")
-            external_results[backend.name] = {"error": str(result), "verdict": "unknown"}
-        else:
-            external_results[backend.name] = result
-
-    # 2. Consolidação e Veredito Final
-    final_result = local_analysis.build_url_analysis_result(str(url), external_results)
-    
-    # 3. Análise MITRE ATT&CK
-    final_result['mitre_attack'] = utils.get_mitre_attack_info(final_result)
-    
-    # 4. Análise com IA
-    final_result['ai_analysis'] = await get_ai_explanation(final_result, ai_provider)
-
-    # 5. Persistência
-    result_id = await asyncio.to_thread(database.save_analysis, final_result)
-    logger.info(f"Análise concluída para {url}. ID do resultado: {result_id}")
-    return result_id
+    f_r = local_analysis.build_url_analysis_result(str(u), e_r)
+    f_r['mitre_attack'] = utils.get_mitre_attack_info(f_r)
+    f_r['ai_analysis'] = await get_ai_explanation(f_r, ai_p)
+    r_id = await asyncio.to_thread(database.save_analysis, f_r)
+    return r_id
 
 async def enqueue_file_analysis(content: bytes, filename: str, ai_provider: str = None) -> str:
     """
@@ -802,167 +784,4 @@ def get_featured_cves(limit: int = 5) -> List[Dict[str, str]]:
     except Exception as e:
         logger.error(f"Erro ao buscar CVEs: {e}")
         return []
-
-def get_br_threat_trends(limit: int = 5) -> List[Dict[str, str]]:
-    """
-    Obtém tendências de ameaças e alertas nacionais (CTIR Gov).
-    Foca nos 5 alertas mais recentes.
-    """
-    try:
-        # Forçamos o limite a ser sempre 5 para atender à solicitação do usuário
-        limit = 5
-        
-        cached = news_cache.get("br_alerts_v4")
-        # Se o cache existe e tem o tamanho correto, retornamos
-        if cached and len(cached) >= limit:
-            return cached[:limit]
-            
-        items = []
-        now = datetime.now()
-        current_year = now.year
-        
-        # 1. Scraper robusto para CTIR Gov
-        try:
-            # Primeiro, consulta a página principal fornecida pelo usuário
-            ctir_main_url = "https://www.gov.br/ctir/pt-br/assuntos/alertas-e-recomendacoes/alertas"
-            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
-            resp_main = requests.get(ctir_main_url, timeout=15, headers=headers)
-            
-            urls_to_check = [ctir_main_url]
-            
-            if resp_main.status_code == 200:
-                soup_main = BeautifulSoup(resp_main.content, 'html.parser')
-                # Procura pelo link do ano atual na página principal, priorizando caminhos de alertas
-                year_link = soup_main.find('a', href=re.compile(rf'.*/alertas/{current_year}(/view)?$')) or \
-                            soup_main.find('a', string=re.compile(rf'^\s*{current_year}\s*$')) or \
-                            soup_main.find('a', title=re.compile(rf'.*{current_year}.*'))
-                
-                if year_link:
-                    year_url = year_link.get('href')
-                    if year_url:
-                        if not year_url.startswith('http'):
-                            year_url = f"https://www.gov.br{year_url}"
-                        urls_to_check.append(year_url)
-                
-                # Sempre adiciona o ano atual construído se não encontrado
-                constructed_year_url = f"{ctir_main_url}/{current_year}"
-                if constructed_year_url not in urls_to_check:
-                    urls_to_check.append(constructed_year_url)
-
-                # Adiciona o ano anterior para garantir que tenhamos pelo menos 5 alertas recentes
-                prev_year = current_year - 1
-                prev_year_link = soup_main.find('a', href=re.compile(rf'.*/alertas/{prev_year}(/view)?$')) or \
-                                 soup_main.find('a', string=re.compile(rf'^\s*{prev_year}\s*$'))
-                if prev_year_link:
-                    prev_url = prev_year_link.get('href')
-                    if prev_url:
-                        if not prev_url.startswith('http'):
-                            prev_url = f"https://www.gov.br{prev_url}"
-                        urls_to_check.append(prev_url)
-                else:
-                    urls_to_check.append(f"{ctir_main_url}/{prev_year}")
-
-            # Agora percorre as URLs (Principal, Ano Atual, Ano Anterior) para coletar alertas
-            for target_url in list(dict.fromkeys(urls_to_check)):
-                try:
-                    logger.info(f"Scraping CTIR Gov: {target_url}")
-                    resp = requests.get(target_url, timeout=12, headers=headers)
-                    if resp.status_code != 200: continue
-                    
-                    soup = BeautifulSoup(resp.content, 'html.parser')
-                    # Busca mais ampla por conteúdo
-                    content_area = soup.find('div', id='content-core') or \
-                                   soup.find('div', class_='documentContent') or \
-                                   soup.find('article') or \
-                                   soup.find('main') or \
-                                   soup.body
-                    
-                    if content_area:
-                        potential_links = content_area.find_all('a')
-                        
-                        for link in potential_links:
-                            url = link.get('href', '')
-                            title = link.get_text().strip()
-                            
-                            # Filtro mais flexível para alertas
-                            is_alert_url = '/alertas/' in url and any(char.isdigit() for char in url)
-                            # Ignora links que são apenas índices de anos ou a própria página de alertas
-                            is_index = url.endswith('/alertas') or \
-                                       re.search(r'/alertas/\d{4}(/view)?$', url) or \
-                                       'index_html' in url
-                            
-                            if is_alert_url and not is_index and len(title) > 8:
-                                item_url = url if url.startswith('http') else f"https://www.gov.br{url}"
-                                if any(it['url'] == item_url for it in items): continue
-
-                                # Tenta extrair a data do texto do link ou do elemento pai
-                                date_str = None
-                                # 1. Tenta encontrar no texto do link (ex: "Alerta 01/2025 - 10/01/2025")
-                                m_date = re.search(r'(\d{2}/\d{2}/\d{4})', title)
-                                if m_date:
-                                    date_str = m_date.group(1)
-                                
-                                # 2. Tenta encontrar no elemento pai
-                                if not date_str:
-                                    parent = link.find_parent(['article', 'div', 'li', 'tr', 'p'])
-                                    if parent:
-                                        date_elem = parent.find(class_=re.compile(r'date|documentByLine|timestamp|summary-view-icon'))
-                                        if date_elem:
-                                            m_date = re.search(r'(\d{2}/\d{2}/\d{4})', date_elem.get_text())
-                                            if m_date: date_str = m_date.group(1)
-                                        else:
-                                            m_date = re.search(r'(\d{2}/\d{2}/\d{4})', parent.get_text())
-                                            if m_date: date_str = m_date.group(1)
-                                
-                                # 3. Se ainda não tem, usa a data atual como fallback (será ordenado por título se necessário)
-                                if not date_str:
-                                    date_str = now.strftime("%d/%m/%Y")
-
-                                items.append({
-                                    "date": date_str,
-                                    "title": f"[CTIR Gov] {title}",
-                                    "summary": f"Informativo oficial do CTIR Gov. Consulte para detalhes técnicos e recomendações.",
-                                    "url": item_url
-                                })
-                                
-                                if len(items) >= 40: break # Coleta bastante para garantir o Top 5
-                except Exception as e:
-                    logger.warning(f"Erro ao processar URL do CTIR {target_url}: {e}")
-                
-                if len(items) >= 40: break
-        except Exception as e:
-            logger.warning(f"Erro crítico no scraping do CTIR Gov: {e}")
-
-        if not items:
-            logger.info("Nenhum alerta encontrado via scraping, usando fallbacks.")
-            items = [
-                {"date": now.strftime("%d/%m/%Y"), "title": "[CTIR Gov] Alertas e Recomendações de Segurança", "summary": "Acesse o portal oficial para as últimas recomendações de segurança cibernética do governo federal.", "url": "https://www.gov.br/ctir/pt-br/assuntos/alertas-e-recomendacoes/alertas"},
-                {"date": now.strftime("%d/%m/%Y"), "title": "[CTIR Gov] Orientações para Prevenção de Incidentes", "summary": "Diretrizes oficiais para o tratamento de incidentes em redes governamentais.", "url": "https://www.gov.br/ctir/"}
-            ]
-        else:
-            # Ordenação rigorosa por data (mais recentes primeiro)
-            try:
-                # Função auxiliar para converter string de data para objeto datetime
-                def parse_dt(d_str):
-                    try: return datetime.strptime(d_str, "%d/%m/%Y")
-                    except: return datetime.min
-                
-                items.sort(key=lambda x: parse_dt(x['date']), reverse=True)
-            except Exception as e:
-                logger.error(f"Erro ao ordenar alertas por data: {e}")
-            
-        final_items = items[:limit]
-        
-        # Apenas faz cache se tivermos resultados reais (mais de 2 itens ou não são os fallbacks)
-        is_fallback = len(final_items) <= 2 and "Alertas e Recomendações" in final_items[0]['title']
-        if not is_fallback:
-            news_cache.set("br_alerts_v4", final_items, expire=3600) # Cache de 1 hora
-        
-        return final_items
-    except Exception as e:
-
-        logger.error(f"Erro crítico em get_br_threat_trends: {e}", exc_info=True)
-        return [
-            {"date": datetime.now().strftime("%d/%m/%Y"), "title": "Tendências indisponíveis", "summary": "Falha ao consultar fontes do CTIR Gov.", "url": "https://www.gov.br/ctir/"}
-        ]
 

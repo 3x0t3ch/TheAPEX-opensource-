@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Licença Comunitária | The APEX{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 900px; margin: 0 auto; padding: 40px;">
+    <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1.5px; text-transform: uppercase; font-style: italic; margin-bottom: 30px;">
+        Licença <span style="color: var(--accent-color);">Comunitária</span>
+    </h1>
+
+    <div style="color: var(--text-secondary); line-height: 1.8; font-size: 15px;">
+        <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; border: 1px solid var(--glass-border); margin-bottom: 30px; white-space: pre-wrap;">
+LICENÇA COMUNITÁRIA THE APEX (CORE OSS EDITION)
+
+Copyright (c) 2024-2026 Comunidade The APEX
+
+Por meio desta, é concedida permissão, gratuitamente, a qualquer pessoa que obtenha uma cópia deste software e dos arquivos de documentação associados (o "Software"), para utilizar, estudar, modificar e distribuir o Software, sujeito às seguintes condições:
+
+1. USO NÃO COMERCIAL: O Software não pode ser utilizado para fins comerciais, nem vendido, licenciado ou explorado financeiramente em sua forma original ou modificada sem autorização expressa dos detentores dos direitos autorais.
+
+2. ATRIBUIÇÃO: O aviso de copyright acima e este aviso de permissão devem ser incluídos em todas as cópias ou partes substanciais do Software.
+
+3. DERIVADOS: Quaisquer trabalhos derivados devem manter a mesma licença, garantindo que o código permaneça aberto e gratuito para a comunidade.
+
+O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA...
+        </div>
+
+        <section style="margin-bottom: 35px;">
+            <h2 style="color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 15px;">Por que uma licença comunitária?</h2>
+            <p>O The APEX nasceu com o propósito de democratizar o acesso a ferramentas de segurança de alto nível. Para garantir que o projeto continue evoluindo e beneficiando a todos, adotamos um modelo que protege o trabalho dos colaboradores contra exploração comercial indevida.</p>
+        </section>
+
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--glass-border); text-align: center; font-size: 13px;">
+            <p>© 2024-2026 The APEX Community. Versão Core OSS.</p>
+            <a href="{{ url_for('main.inicio') }}" class="action-btn" style="display: inline-block; margin-top: 20px; text-decoration: none;">VOLTAR AO DASHBOARD</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

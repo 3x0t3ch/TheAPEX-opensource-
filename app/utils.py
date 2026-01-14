@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# © 2024-2026 The APEX Community
+# Licensed under The APEX Community License (Non-Commercial)
 """
 Módulo de Funções Utilitárias.
 

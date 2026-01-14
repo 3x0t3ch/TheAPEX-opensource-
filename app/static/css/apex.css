@@ -111,13 +111,13 @@ body {
 }
 
 .nav-btn.active {
-    background: var(--accent-color);
-    color: #fff;
-    box-shadow: 0 4px 15px var(--accent-glow);
+    background: #4a4a4b;
+    color: #ffffff !important;
+    box-shadow: none;
 }
 
 .nav-btn.active i {
-    color: #fff;
+    color: #ffffff !important;
 }
 
 .nav-badge {
@@ -350,27 +350,26 @@ body {
 }
 
 .logo-icon-box i {
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
-    animation: electric-zap 3s infinite;
+    color: #fff !important;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
 @keyframes electric-zap {
-    0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)); }
-    92% { opacity: 1; transform: scale(1); }
-    94% { opacity: 0.8; transform: scale(1.1) skewX(-10deg); filter: drop-shadow(0 0 15px #fff); }
-    96% { opacity: 1; transform: scale(0.9) skewX(10deg); }
-    98% { opacity: 0.9; transform: scale(1.05); }
+    /* Removido */
+}
+
+@keyframes pulse-white {
+    /* Removido */
 }
 
 .logo-icon-box:hover {
-    transform: scale(1.1) rotate(5deg);
-    background: #fff;
-    color: var(--sidebar-bg);
-    box-shadow: 0 0 30px rgba(255,255,255,0.4);
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
 }
 
 .logo-main-text i {
-    animation: electric-zap 3s infinite 0.5s;
+    display: none;
 }
 
 .logo-text-wrapper {

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# © 2024-2026 The APEX Community
+# Licensed under The APEX Community License (Non-Commercial)
 from quart import Blueprint, request, redirect, url_for, flash, jsonify, current_app
 from pydantic import ValidationError
 from . import services, utils
@@ -115,19 +117,6 @@ async def analyze_url():
     except Exception as e:
         logger.error(f"Erro na análise de URL: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
-
-@api_bp.route('/threats/brasil', methods=['GET'])
-async def threats_brasil():
-    try:
-        trends = services.get_br_threat_trends(limit=5)
-        return jsonify({
-            'ok': True, 
-            'items': trends,
-            'ai_analysis': None
-        })
-    except Exception as e:
-        logger.error(f"Erro ao obter Alertas Brasil: {e}", exc_info=True)
-        return jsonify({'ok': False, 'error': str(e)}), 500
 
 @api_bp.route('/scan/<module_type>', methods=['POST'])
 async def run_scan(module_type):

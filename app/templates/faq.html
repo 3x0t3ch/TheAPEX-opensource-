@@ -5,7 +5,7 @@
 {% block content %}
 <div class="header">
     <h1>Perguntas Frequentes</h1>
-    <p style="color: var(--text-secondary);">Entenda como a plataforma funciona.</p>
+    <p style="color: var(--text-secondary);">Entenda como a plataforma The APEX (Core) funciona.</p>
 </div>
 
 <style>
@@ -62,38 +62,41 @@
 
 <div class="glass-card">
     <details open>
-        <summary>Como funciona a análise?</summary>
+        <summary>Como funciona a análise na versão Core?</summary>
         <div class="faq-content">
-            A análise é realizada em múltiplas etapas:
+            A análise na versão Core foca em transparência e processamento local:
             <ul>
-                <li><strong>Análise Multi-Fonte:</strong> Consultamos APIs como VirusTotal e Google Safe Browsing simultaneamente.</li>
-                <li><strong>Análise Estática Local:</strong> Verificamos o arquivo localmente (hash SHA256, tipo de arquivo) antes de enviar dados externos.</li>
-                <li><strong>Inteligência Artificial:</strong> Utilizamos modelos avançados (Gemini, Groq) para interpretar os dados técnicos e gerar um resumo executivo em linguagem natural.</li>
+                <li><strong>Análise Estática Local:</strong> Verificamos arquivos PE/ELF localmente buscando strings suspeitas, importações maliciosas e anomalias de estrutura sem enviar o arquivo completo para a nuvem.</li>
+                <li><strong>Reputação Externa:</strong> Consultamos o VirusTotal (via API) para obter vereditos de múltiplos motores antivírus.</li>
+                <li><strong>OpenSourceMalware:</strong> Utilizamos inteligência aberta para identificar assinaturas conhecidas de malware.</li>
+                <li><strong>Detecção de Phishing:</strong> Analisamos URLs em busca de ataques de homógrafo e conteúdo sensível.</li>
             </ul>
+        </div>
+    </details>
+
+    <details>
+        <summary>Por que não vejo opções de IA ou SIEM?</summary>
+        <div class="faq-content">
+            O The APEX segue um modelo <strong>Open Core</strong>. As funcionalidades de Inteligência Artificial (IA Cognitiva), Integração Nativa com SIEM (Elastic/Wazuh) e Network Sniffer de nível de kernel são exclusivas dos Tiers <strong>Operador</strong> e <strong>Enterprise</strong>. 
+            <br><br>
+            A versão Core (Open Source) fornece a fundação tecnológica e os motores de análise estática essenciais para pesquisadores e auditores.
         </div>
     </details>
 
     <details>
         <summary>O que é a Detecção de Phishing Avançada?</summary>
         <div class="faq-content">
-            O sistema identifica URLs que utilizam caracteres especiais (como cirílicos) para se passar por domínios legítimos. Essa técnica, conhecida como ataque de homógrafo, é comum em tentativas de phishing e é detectada automaticamente pela nossa ferramenta.
+            O sistema identifica URLs que utilizam caracteres especiais (como cirílicos) para se passar por domínios legítimos. Essa técnica, conhecida como ataque de homógrafo, é comum em tentativas de phishing e é detectada automaticamente pela nossa ferramenta de análise de URL.
         </div>
     </details>
 
     <details>
-        <summary>O que significa a pontuação de risco?</summary>
+        <summary>Guia: Como obter as API Keys permitidas no Core</summary>
         <div class="faq-content">
-            A pontuação de risco é um cálculo consolidado que combina os vereditos de todas as ferramentas de segurança consultadas. Ela varia de 0 a 100, onde valores mais altos indicam uma maior probabilidade de o arquivo ou URL ser malicioso.
-        </div>
-    </details>
-
-    <details>
-        <summary>Guia Passo-a-Passo: Como obter cada API Key</summary>
-        <div class="faq-content">
-            <p>Siga estas instruções para obter as chaves necessárias gratuitamente:</p>
+            <p>A versão Core permite integração com dois serviços principais:</p>
             
             <div style="margin-top: 15px;">
-                <strong>1. VirusTotal (Análise de Malware)</strong>
+                <strong>1. VirusTotal (Análise de Reputação)</strong>
                 <ul>
                     <li>Cadastre-se em <a href="https://www.virustotal.com/gui/join-us" target="_blank">VirusTotal Join Us</a>.</li>
                     <li>Após logar, clique no seu perfil (canto superior direito) e vá em <strong>"API Key"</strong>.</li>
@@ -102,39 +105,10 @@
             </div>
 
             <div style="margin-top: 15px;">
-                <strong>2. Groq (Inteligência Artificial - Recomendado)</strong>
+                <strong>2. OpenSourceMalware (Inteligência Aberta)</strong>
                 <ul>
-                    <li>Acesse <a href="https://console.groq.com/keys" target="_blank">Groq Console</a>.</li>
-                    <li>Faça login (pode usar conta Google).</li>
-                    <li>Clique em <strong>"Create API Key"</strong>, dê um nome e copie a chave gerada.</li>
-                </ul>
-            </div>
-
-            <div style="margin-top: 15px;">
-                <strong>3. Google Gemini (IA Alternativa)</strong>
-                <ul>
-                    <li>Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.</li>
-                    <li>Clique em <strong>"Create API key"</strong>.</li>
-                    <li>Escolha o projeto e copie sua chave.</li>
-                </ul>
-            </div>
-
-            <div style="margin-top: 15px;">
-                <strong>4. Google Safe Browsing (Verificação de URLs)</strong>
-                <ul>
-                    <li>Acesse o <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>.</li>
-                    <li>Crie um novo projeto ou selecione um existente.</li>
-                    <li>Vá em <strong>"APIs & Services" > "Library"</strong> e pesquise por "Safe Browsing API". Ative-a.</li>
-                    <li>Vá em <strong>"Credentials" > "Create Credentials" > "API Key"</strong>.</li>
-                </ul>
-            </div>
-
-            <div style="margin-top: 15px;">
-                <strong>5. Elastic Stack & Wazuh (SIEM Locais Gratuito)</strong>
-                <ul>
-                    <li><strong>Elastic:</strong> Rode <code>docker-compose up -d</code>. O Elasticsearch ficará em <code>http://localhost:9200</code> e o Kibana em <a href="http://localhost:5601" target="_blank">http://localhost:5601</a>.</li>
-                    <li><strong>Wazuh:</strong> Incluído no nosso <code>docker-compose.yml</code>! O indexador roda na porta <code>9201</code>, o Manager na <code>55000</code> e o Dashboard na <code>5602</code>.</li>
-                    <li><strong>Dica:</strong> Para o Wazuh funcionar no Windows (Docker Desktop), garanta que o WSL2 tenha memória suficiente (mínimo 4GB recomendados).</li>
+                    <li>Acesse <a href="https://opensourcemalware.com" target="_blank">OpenSourceMalware.com</a> para mais informações sobre o projeto.</li>
+                    <li>A chave de API pode ser configurada diretamente se você possuir acesso ao serviço de inteligência deles.</li>
                 </ul>
             </div>
         </div>
@@ -143,21 +117,14 @@
     <details>
         <summary>Onde configurar as chaves?</summary>
         <div class="faq-content">
-            Após obter suas chaves, clique no ícone de engrenagem no menu lateral ou acesse a página de <a href="{{ url_for('main.setup') }}">Configurações</a>. Cole as chaves nos campos correspondentes e clique em "Salvar Alterações". A aplicação estará pronta para uso imediato.
+            Após obter suas chaves, clique no ícone de engrenagem no menu lateral ou acesse a página de <a href="{{ url_for('main.setup') }}">Configurações</a>. Cole as chaves nos campos correspondentes (VirusTotal ou OpenSourceMalware) e clique em "Salvar Alterações".
         </div>
     </details>
 
     <details>
-        <summary>Serviços de Análise Externos</summary>
+        <summary>Licenciamento e Uso</summary>
         <div class="faq-content">
-            <p>O The APEX utiliza o <strong>VirusTotal</strong> e o <strong>OpenSourceMalware.com</strong> para fornecer inteligência de ameaças em tempo real.</p>
-            <ul>
-                <li><strong>VirusTotal:</strong> Utilizado para verificação de arquivos e URLs contra dezenas de motores antivírus.</li>
-                <li><strong>OpenSourceMalware:</strong> Fornece feeds e análise de malware de código aberto.</li>
-            </ul>
-            <p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
-                <strong>Nota:</strong> Estas são as únicas integrações externas permitidas na versão Core para garantir o máximo de privacidade e controle local.
-            </p>
+            Esta versão Core é licenciada sob a <strong>MIT License</strong>, permitindo uso livre para estudo, pesquisa e modificação. Para funcionalidades avançadas como a interface "Dark Matter", IA e suporte prioritário, consulte nossos planos comerciais no arquivo <code>BUSINESS_MODEL.txt</code> na raiz do projeto.
         </div>
     </details>
 </div>

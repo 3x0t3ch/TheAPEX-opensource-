@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# © 2024-2026 The APEX Community
+# Licensed under The APEX Community License (Non-Commercial)
 """
 Módulo de Backends de Análise (Assíncrono).
 
@@ -47,18 +49,6 @@ class VirusTotalService(AnalysisService):
 
     async def analyze_url(self, url: str) -> Dict[str, Any]:
         return await _query_virustotal_url(url, self.api_key)
-
-class GoogleSafeBrowsingService(AnalysisService):
-    """Serviço de análise para a API do Google Safe Browsing."""
-    def __init__(self, api_key: str):
-        super().__init__("google_safe_browsing")
-        self.api_key = api_key
-
-    async def analyze_file(self, sha256: str, content: bytes, filename: str) -> Dict[str, Any]:
-        return {}
-
-    async def analyze_url(self, url: str) -> Dict[str, Any]:
-        return await _query_google_safe_browsing(url, self.api_key)
 
 class LocalHomographService(AnalysisService):
     """Serviço "virtual" para análises locais."""
@@ -126,8 +116,6 @@ def get_url_analysis_backends() -> list[AnalysisService]:
     backends = [LocalHomographService(), SensitiveContentService()]
     if settings.VT_API_KEY:
         backends.append(VirusTotalService(settings.VT_API_KEY))
-    if settings.GOOGLE_SAFE_BROWSING_API_KEY:
-        backends.append(GoogleSafeBrowsingService(settings.GOOGLE_SAFE_BROWSING_API_KEY))
     return backends
 
 
@@ -226,35 +214,6 @@ async def _query_virustotal_file(sha256: str, api_key: str, content: bytes, file
     except aiohttp.ClientError as e:
         logger.error(f"VT File Scan Client Error: {e}")
         return {"error": f"Erro de conexão com o VirusTotal: {e}"}
-
-async def _query_google_safe_browsing(url: str, api_key: str) -> dict:
-    api_url = f"{settings.GOOGLE_SAFE_BROWSING_URL}?key={api_key}"
-    request_body = {
-        "client": {"clientId": "analisador-malware", "clientVersion": settings.APP_VERSION},
-        "threatInfo": {
-            "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
-            "platformTypes": ["ANY_PLATFORM"],
-            "threatEntryTypes": ["URL"],
-            "threatEntries": [{"url": url}]
-        }
-    }
-    timeout = aiohttp.ClientTimeout(total=settings.REQUEST_TIMEOUT)
-
-    try:
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(api_url, json=request_body) as response:
-                response.raise_for_status()
-                data = await response.json()
-                if data and data.get("matches"):
-                    return {"found": True, "verdict": "malicious", "score": 100, "details": data["matches"]}
-                return {"found": False, "verdict": "clean", "score": 0}
-    except asyncio.TimeoutError:
-        logger.error("GSB Scan Timeout")
-        return {"error": "Timeout ao conectar com o Google Safe Browsing."}
-    except aiohttp.ClientError as e:
-        logger.error(f"GSB Scan Client Error: {e}")
-        return {"error": f"Erro de conexão com o Google Safe Browsing: {e}"}
-
 
 async def submit_osm_report(sha256: str, api_key: str, threat_description: str) -> dict:
     """Submete um relatório de ameaça para a API do OpenSourceMalware.com."""

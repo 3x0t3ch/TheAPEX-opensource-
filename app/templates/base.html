@@ -6,6 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() if csrf_token else '' }}">
     <title>{% block title %}The Apex // Security Platform{% endblock %}</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>⚡</text></svg>">
+    
     <!-- Bootstrap Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,15 +24,30 @@
     {% block head %}{% endblock %}
 </head>
 <body>
+    <div style="display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden;">
+        <!-- Top Info Bar -->
+        <div style="background: #111; border-bottom: 1px solid var(--glass-border); padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-secondary); height: 35px; flex-shrink: 0; z-index: 1000;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span><i class="bi bi-info-circle" style="margin-right: 5px;"></i> Você está utilizando a versão <strong>Core Open Source</strong></span>
+                <span style="width: 1px; height: 12px; background: var(--glass-border);"></span>
+                <a href="{{ url_for('main.terms') }}" style="color: var(--accent-color); text-decoration: none; font-weight: 600; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">TERMOS DE USO</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="{{ url_for('main.license') }}" style="color: #198754; text-decoration: none; display: flex; align-items: center; gap: 5px; font-weight: 600; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                    <i class="bi bi-patch-check-fill"></i> Licença Comunitária Ativa
+                </a>
+            </div>
+        </div>
 
-    <!-- Sidebar -->
+        <div style="display: flex; flex: 1; overflow: hidden;">
+            <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-container">
             <div class="logo-icon-box">
-                <i class="bi bi-zap-fill" style="font-size: 22px;"></i>
+                <i class="bi bi-lightning-charge-fill" style="font-size: 24px;"></i>
             </div>
             <div class="logo-text-wrapper">
-                <span class="logo-main-text" style="font-weight: 900; letter-spacing: -1.5px; text-transform: uppercase; font-style: italic;">THE <span class="highlight" style="color: var(--accent-color);">APEX</span> <i class="bi bi-zap-fill" style="color: var(--accent-color); font-size: 14px; margin-left: -5px; vertical-align: top;"></i></span>
+                <span class="logo-main-text" style="font-weight: 900; letter-spacing: -1.5px; text-transform: uppercase; font-style: italic;">THE <span class="highlight" style="color: var(--accent-color);">APEX</span></span>
                 <span class="logo-edition" style="font-size: 9px; font-weight: 800; letter-spacing: 1px; opacity: 0.7;">CORE OSS EDITION</span>
             </div>
         </div>
@@ -40,9 +58,6 @@
         
         <div style="margin-top: 25px; margin-bottom: 8px; padding-left: 16px; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Módulos</div>
         
-        <a href="{{ url_for('main.index') }}?module=alerts" class="nav-btn {% if request.endpoint == 'main.index' and request.args.get('module') == 'alerts' %}active{% endif %}">
-            <i class="bi bi-bell-fill"></i> Alertas Brasil <span class="nav-badge">NEW</span>
-        </a>
         <a href="{{ url_for('main.index') }}?module=network" class="nav-btn {% if request.endpoint == 'main.index' and request.args.get('module') == 'network' %}active{% endif %}">
             <i class="bi bi-broadcast-pin"></i> Network Monitor
         </a>
@@ -92,6 +107,13 @@
             <a href="https://github.com/GermanoRoberto" target="_blank" title="GitHub" style="color: var(--text-secondary); font-size: 18px; transition: color 0.3s;"><i class="bi bi-github"></i></a>
             <a href="https://www.linkedin.com/in/germanorcarmo/" target="_blank" title="LinkedIn" style="color: var(--text-secondary); font-size: 18px; transition: color 0.3s;"><i class="bi bi-linkedin"></i></a>
         </div>
+
+        <!-- Upgrade Button -->
+        <div style="margin-top: 20px; padding: 0 10px;">
+            <a href="https://theapex.com.br/upgrade" target="_blank" class="nav-btn" style="background: linear-gradient(135deg, #fff, #a0a0a0); color: #000; font-weight: 800; justify-content: center; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border: none;">
+                <i class="bi bi-lightning-charge-fill"></i> UPGRADE PRO
+            </a>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -109,8 +131,7 @@
 
         {% block content %}{% endblock %}
         <div class="footer">
-            <div>The Apex // Security Platform</div>
-            <div>v2.0.4-Core</div>
+            <div>© 2024-2026 The APEX Community.</div>
         </div>
     </div>
 
@@ -121,6 +142,8 @@
             a.addEventListener('mouseleave', () => a.style.color = 'var(--text-secondary)');
         });
     </script>
+    </div>
+    </div>
     {% block scripts %}{% endblock %}
 </body>
 </html>

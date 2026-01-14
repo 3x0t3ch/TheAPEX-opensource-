@@ -1,85 +1,81 @@
-# 🛡️ The APEX — Open Core Security Platform (v2.0.4)
+# ⚡ THE APEX — Open Core Security Platform (© 2024-2026 The APEX Community)
 
-O **The APEX** é uma plataforma integrada de segurança cibernética de alta performance, projetada para consolidar análise de ameaças, monitoramento de ativos e inteligência tática em uma única interface moderna e totalmente assíncrona.
-
-Baseado no modelo **Open Core**, o The APEX oferece uma fundação transparente e auditável para pesquisadores e entusiastas, enquanto mantém módulos avançados para operações profissionais e governamentais.
+O **The APEX** é uma plataforma de segurança cibernética de alta performance, projetada para consolidação de inteligência de ameaças, monitoramento de ativos e análise tática. Esta versão **Core** é a fundação tecnológica do projeto, oferecendo um motor totalmente assíncrono e transparente para pesquisadores e auditores.
 
 ---
 
-## 🚀 Modelo de Negócio (Tiers)
+## 🏛️ Modelo Open Core (Tiers)
 
-O The APEX é distribuído em três níveis de acesso, garantindo que desde o estudante até o SOC corporativo tenham as ferramentas certas:
+O ecossistema The APEX é dividido em níveis de acesso para atender desde a pesquisa acadêmica até operações de SOC corporativo:
 
-### [TIER 0] CORE (Open Source)
-**Foco:** Pesquisa, Auditoria e Estudo.
-- **Backend:** Código fonte completo em Python/Quart.
-- **Motores:** Análise estática local (PE Files, Strings, Phishing Detection).
-- **Interface:** UI Básica Atlas (Grayscale).
+### [TIER 0] CORE (Open Source) — **ESTA VERSÃO**
+- **Foco:** Pesquisa, Auditoria e Estudo de Malware.
+- **Backend:** Python 3.12+ / Quart (ASGI).
+- **Motores:** Análise estática local (PE/ELF), Detecção de Phishing (Homógrafo).
+- **Reputação:** Integração com VirusTotal e OpenSourceMalware.
+- **Interface:** UI Atlas (Grayscale Edition).
 - **Licença:** MIT (Permissiva).
-- **Custo:** R$ 0,00 (Gratuito).
 
 ### [TIER 1] OPERADOR (Professional)
-**Foco:** Consultores e Pentesters.
 - **Tudo do Tier 0** +
-- **Dashboard Operacional:** Interface Standard.
-- **Reputação:** Integração automatizada com VirusTotal.
-- **Relatórios:** Geração de PDF simplificado.
+- **Interface:** Dashboard Operacional Standard.
+- **Automação:** Relatórios PDF e updates semanais de Threat Intel.
 - **Distribuição:** Container Docker Privado.
 
 ### [TIER 2] ENTERPRISE (Elite)
-**Foco:** SOCs, Governo e Grandes Corporações.
-- **Full Unlock:** Interface **Dark Matter** (Visualização em tempo real).
-- **IA Cognitiva:** Resumos executivos e remediação automatizada (BYOK).
-- **Network Sniffer:** Monitoramento de nível de kernel (Detecção de Beacons).
+- **Interface:** **Dark Matter** (Visualização tática em tempo real).
+- **Inteligência:** IA Cognitiva para resumos executivos e correlação de ameaças (BYOK).
+- **Network:** Sniffer de nível de kernel (Kernel-Level Monitoring).
 - **Orquestração:** Multi-API (VT, Bitdefender, CTIR Gov, etc).
-- **Suporte:** 24/7 direto com a engenharia.
 
 ---
 
-## 🛠️ Funcionalidades (Core Version)
+## 🛠️ Funcionalidades da Versão Core
 
-- **Análise Estática de Malware:** Detecção de anomalias em arquivos e URLs sem envio para nuvem.
-- **Monitoramento de Rede:** Varredura assíncrona de ativos e serviços.
-- **Auditoria de Cofre (Windows):** Identificação de credenciais expostas no sistema.
-- **Threat Intelligence Brasil:** Integração nativa com alertas do CTIR Gov.
-- **Arquitetura Async:** Performance extrema com Quart e Hypercorn.
-- **Pronto para SIEM:** Exportação manual/automatizada para Elastic Stack.
-
----
-
-## 💻 Tecnologias
-
-- **Linguagem:** Python 3.12+
-- **Framework:** Quart (ASGI)
-- **Frontend:** Glassmorphism UI (Vanilla JS / CSS)
-- **Banco de Dados:** SQLite (Async)
-- **Integrações:** CTIR Gov, Elastic Stack, MITRE ATT&CK®.
+- **Malware Analyzer:** Análise estática de arquivos (Strings, Importações, Entropia) e URLs.
+- **Network Monitor:** Varredura assíncrona de ativos e serviços de rede.
+- **System Audit:** Auditoria de credenciais expostas (Windows Vault) e integridade.
+- **Alertas Brasil:** Integração nativa com feeds de ameaças do CTIR Gov.
+- **Privacy First:** Processamento local prioritário, com consultas externas limitadas a serviços de reputação aprovados.
 
 ---
 
-## 🔧 Instalação Rápida (Core)
+## 💻 Stack Tecnológica
 
-### Via Docker (Recomendado)
-```bash
-docker build -t the-apex .
-docker run -d -p 5000:5000 --name the-apex the-apex
-```
+- **Backend:** [Quart](https://pgjones.gitlab.io/quart/) (Fast ASGI Framework)
+- **Frontend:** Glassmorphism UI (Vanilla JS & Modern CSS)
+- **Database:** SQLite com acesso assíncrono.
+- **Security:** CSRF Protection, Pydantic Validation, Local Sandboxing.
 
-### Via Python Local
+---
+
+## 🔧 Instalação e Execução
+
+### Pré-requisitos
+- Python 3.12 ou superior.
+- Docker (opcional, para execução via container).
+
+### Execução Local
 1. Instale as dependências:
-   ```bash
+   ```powershell
    pip install -r requirements.txt
    ```
 2. Inicie a aplicação:
-   ```bash
+   ```powershell
    python initializer.py
    ```
-3. Acesse: `http://localhost:5000`
+3. Acesse no navegador: `http://localhost:5000`
+
+### Execução via Docker
+```powershell
+docker-compose up --build -d
+```
 
 ---
 
-## ⚖️ Licença
-Este repositório contém a versão **Core** do The APEX, licenciada sob a **MIT License**. Para acesso aos Tiers superiores, entre em contato com a equipe comercial.
+## ⚖️ Licenciamento
+
+O código contido neste repositório é licenciado sob a **Licença Comunitária The APEX**. Sinta-se à vontade para contribuir, auditar e adaptar a ferramenta para seus propósitos de pesquisa, respeitando o uso não-comercial.
 
 ---
 *Desenvolvido por [Germano Roberto](https://github.com/GermanoRoberto)*

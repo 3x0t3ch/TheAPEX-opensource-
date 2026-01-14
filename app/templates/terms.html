@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Termos de Uso | The APEX{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 900px; margin: 0 auto; padding: 40px;">
+    <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1.5px; text-transform: uppercase; font-style: italic; margin-bottom: 30px;">
+        Termos de <span style="color: var(--accent-color);">Uso</span> (Open Source)
+    </h1>
+
+    <div style="color: var(--text-secondary); line-height: 1.8; font-size: 15px;">
+        <section style="margin-bottom: 35px;">
+            <h2 style="color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 15px;">1. Natureza do Software</h2>
+            <p>O <strong>The APEX Core OSS Edition</strong> é um software de código aberto fornecido "como está" (as-is). Ao utilizar esta ferramenta, você reconhece que ela foi desenvolvida para fins educacionais e de pesquisa em segurança cibernética.</p>
+        </section>
+
+        <section style="margin-bottom: 35px;">
+            <h2 style="color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 15px;">2. Licenciamento Open Source</h2>
+            <p>Este software é distribuído sob licença de código aberto. Você tem permissão para estudar, modificar e distribuir o código, desde que respeite os créditos originais e as limitações impostas pela licença presente no repositório.</p>
+            <ul style="list-style-type: disc; margin-left: 20px; margin-top: 10px;">
+                <li>É proibida a comercialização desta versão CORE como um produto fechado.</li>
+                <li>Modificações que removam proteções de obfuscação do core para fins de pirataria são desencorajadas pela comunidade.</li>
+            </ul>
+        </section>
+
+        <section style="margin-bottom: 35px;">
+            <h2 style="color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 15px;">3. Responsabilidade e Ética</h2>
+            <p>O usuário é o único responsável legal pelas atividades realizadas com o software. O uso de funcionalidades como o <strong>Network Monitor</strong> em redes de terceiros sem autorização expressa é ilegal e viola estes termos.</p>
+        </section>
+
+        <section style="margin-bottom: 35px;">
+            <h2 style="color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 15px;">4. APIs de Terceiros (VT & OSM)</h2>
+            <p>Esta versão integra-se exclusivamente com as APIs do <strong>VirusTotal</strong> e <strong>OpenSourceMalware.com</strong>. O The APEX não fornece chaves de API. O usuário deve obter suas próprias credenciais e cumprir os Termos de Serviço de cada provedor individualmente.</p>
+        </section>
+
+        <section style="margin-bottom: 35px;">
+            <h2 style="color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 15px;">5. Isenção de Garantia</h2>
+            <p>Devido à sua natureza comunitária e aberta, não oferecemos garantias de detecção de 100%, suporte técnico em tempo real ou SLA de disponibilidade para a versão Core.</p>
+        </section>
+
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--glass-border); text-align: center; font-size: 13px;">
+            <p>© 2024-2026 The APEX Community. Versão Core OSS.</p>
+            <a href="{{ url_for('main.inicio') }}" class="action-btn" style="display: inline-block; margin-top: 20px; text-decoration: none;">VOLTAR AO DASHBOARD</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

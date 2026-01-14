@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# © 2024-2026 The APEX Community
+# Licensed under The APEX Community License (Non-Commercial)
 """
 Rotas principais da aplicação (páginas web).
 
@@ -148,6 +150,16 @@ async def history_clear():
     if utils.validate_csrf_token(form.get('csrf_token')):
         database.clear_all_analyses()
     return redirect(url_for('main.history'))
+
+@main_bp.route('/terms')
+async def terms():
+    """Renderiza a página de termos de uso."""
+    return await render_template('terms.html')
+
+@main_bp.route('/license')
+async def license():
+    """Renderiza a página de licença comunitária."""
+    return await render_template('license.html')
 
 @main_bp.route('/results/<report_id>')
 async def results(report_id):
