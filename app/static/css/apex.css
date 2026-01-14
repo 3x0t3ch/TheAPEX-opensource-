@@ -1,20 +1,20 @@
-﻿:root {
-    --bg-color: #08080a;
-    --sidebar-bg: #0d0d0f;
+:root {
+    --bg-color: #1a1a1b;
+    --sidebar-bg: #212122;
     --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --accent-color: #00dfd8;
-    --accent-glow: rgba(0, 223, 216, 0.2);
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0a5;
-    --card-red: rgba(220, 53, 69, 0.15);
-    --card-yellow: rgba(255, 193, 7, 0.15);
-    --card-blue: rgba(13, 110, 253, 0.15);
-    --card-green: rgba(25, 135, 84, 0.15);
-    --border-red: rgba(220, 53, 69, 0.3);
-    --border-yellow: rgba(255, 193, 7, 0.3);
-    --border-blue: rgba(13, 110, 253, 0.3);
-    --border-green: rgba(25, 135, 84, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.07);
+    --accent-color: #7a7a7a;
+    --accent-glow: rgba(122, 122, 122, 0.15);
+    --text-primary: #e0e0e0;
+    --text-secondary: #8e8e93;
+    --card-red: rgba(100, 100, 100, 0.1);
+    --card-yellow: rgba(120, 120, 120, 0.1);
+    --card-blue: rgba(140, 140, 140, 0.1);
+    --card-green: rgba(160, 160, 160, 0.1);
+    --border-red: rgba(100, 100, 100, 0.2);
+    --border-yellow: rgba(120, 120, 120, 0.2);
+    --border-blue: rgba(140, 140, 140, 0.2);
+    --border-green: rgba(160, 160, 160, 0.2);
 }
 
 body {
