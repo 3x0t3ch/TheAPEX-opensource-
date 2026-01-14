@@ -336,16 +336,41 @@ body {
 
 /* New Logo Styles */
 .logo-icon-box {
-    width: 36px;
-    height: 36px;
-    background: var(--accent-color);
-    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent-color), #4a4a4a);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #000;
-    font-size: 20px;
-    box-shadow: 0 0 20px var(--accent-glow);
+    color: #fff;
+    box-shadow: 0 0 25px var(--accent-glow), inset 0 0 10px rgba(255,255,255,0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo-icon-box i {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+    animation: electric-zap 3s infinite;
+}
+
+@keyframes electric-zap {
+    0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)); }
+    92% { opacity: 1; transform: scale(1); }
+    94% { opacity: 0.8; transform: scale(1.1) skewX(-10deg); filter: drop-shadow(0 0 15px #fff); }
+    96% { opacity: 1; transform: scale(0.9) skewX(10deg); }
+    98% { opacity: 0.9; transform: scale(1.05); }
+}
+
+.logo-icon-box:hover {
+    transform: scale(1.1) rotate(5deg);
+    background: #fff;
+    color: var(--sidebar-bg);
+    box-shadow: 0 0 30px rgba(255,255,255,0.4);
+}
+
+.logo-main-text i {
+    animation: electric-zap 3s infinite 0.5s;
 }
 
 .logo-text-wrapper {

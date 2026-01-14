@@ -148,16 +148,15 @@
     </details>
 
     <details>
-        <summary>Integração com SIEM/SOAR (Elastic & Wazuh Locais)</summary>
+        <summary>Serviços de Análise Externos</summary>
         <div class="faq-content">
-            <p>O The APEX suporta integração com o <strong>Elastic Stack</strong> e <strong>Wazuh</strong>, que podem ser utilizados gratuitamente se instalados localmente (Self-Managed).</p>
+            <p>O The APEX utiliza o <strong>VirusTotal</strong> e o <strong>OpenSourceMalware.com</strong> para fornecer inteligência de ameaças em tempo real.</p>
             <ul>
-                <li><strong>Setup Automático:</strong> Incluímos um <code>docker-compose.yml</code> na raiz do projeto que configura o Elasticsearch, Kibana, Wazuh Indexer, Manager e Dashboard automaticamente.</li>
-                <li><strong>Requisito Wazuh:</strong> No Linux ou WSL2, você precisa rodar o comando <code>sudo sysctl -w vm.max_map_count=262144</code> antes de iniciar para que o indexador funcione corretamente.</li>
-                <li><strong>Configuração:</strong> Use <code>http://localhost:9200</code> para o Elastic e <code>http://localhost:55000</code> para o Wazuh nas Configurações.</li>
+                <li><strong>VirusTotal:</strong> Utilizado para verificação de arquivos e URLs contra dezenas de motores antivírus.</li>
+                <li><strong>OpenSourceMalware:</strong> Fornece feeds e análise de malware de código aberto.</li>
             </ul>
             <p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
-                <strong>Nota:</strong> Mantemos a remoção de <strong>Splunk</strong>, <strong>QRadar</strong> e <strong>Microsoft Sentinel</strong> por serem serviços predominantemente pagos ou corporativos.
+                <strong>Nota:</strong> Estas são as únicas integrações externas permitidas na versão Core para garantir o máximo de privacidade e controle local.
             </p>
         </div>
     </details>

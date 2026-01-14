@@ -1,4 +1,4 @@
-﻿import os
+import os
 import secrets
 import warnings
 from dotenv import load_dotenv
@@ -56,28 +56,14 @@ class Config:
         self.REQUEST_TIMEOUT = int(os.environ.get('REQUEST_TIMEOUT_SECONDS', 30))
 
         # Chaves de API
-        # AI_API_KEY desativado no TIER 0
-        self.AI_API_KEY = None
-        self.AI_PROVIDER_DETECTED = None
         self.VT_API_KEY = os.environ.get('VT_API_KEY')
         self.OSM_API_KEY = os.environ.get('OSM_API_KEY')
-        self.GOOGLE_SAFE_BROWSING_API_KEY = os.environ.get('GOOGLE_SAFE_BROWSING_API_KEY')
-
-        # SIEM/SOAR Integrations
-        self.ELASTIC_API_KEY = os.environ.get('ELASTIC_API_KEY')
-        self.ELASTIC_API_URL = os.environ.get('ELASTIC_API_URL')
-
-        # Modelos de IA
-        
-        
-        
 
         # URLs de Endpoints de API (raramente mudam, mas podem ser externalizadas se necessário)
         self.VT_API_URL_FILES = "https://www.virustotal.com/api/v3/files/{sha256}"
         self.VT_API_URL_URLS = "https://www.virustotal.com/api/v3/urls"
         self.VT_API_URL_ANALYSES = "https://www.virustotal.com/api/v3/analyses/{id}"
         self.VT_API_URL_UPLOAD = "https://www.virustotal.com/api/v3/files/upload_url"
-        self.GOOGLE_SAFE_BROWSING_URL = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
 
     def is_configured(self) -> bool:
         """Verifica se as chaves de API essenciais estão configuradas."""

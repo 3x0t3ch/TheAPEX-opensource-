@@ -24,16 +24,6 @@ class NetworkAnalysisRequest(BaseModel):
 
 class SetupRequest(BaseModel):
     VT_API_KEY: Optional[str] = None
-    AI_API_KEY: Optional[str] = None
     OSM_API_KEY: Optional[str] = None
-    GOOGLE_SAFE_BROWSING_API_KEY: Optional[str] = None
-    GEMINI_MODEL: Optional[str] = None
-    GROQ_MODEL: Optional[str] = None
-    
-    # SIEM/SOAR Integrations
-    ELASTIC_API_KEY: Optional[str] = None
-    ELASTIC_API_URL: Optional[str] = None
-    WAZUH_API_KEY: Optional[str] = None
-    WAZUH_API_URL: Optional[str] = None
     
     # Validação customizada pode ser adicionada aqui, ex: checar formato de chaves

@@ -103,25 +103,17 @@ def is_configured() -> bool:
 
 def get_key_status() -> dict:
     """
-    Retorna um dicionário com o status mascarado das chaves de API e do provedor de IA.
+    Retorna um dicionário com o status mascarado das chaves de API.
     Útil para exibir o status de configuração na interface do usuário sem
     expor as chaves reais.
     """
-    # Lê as chaves e o provedor detectado do objeto 'settings'
-    vt_key = settings.VT_API_KEY
-    ai_key = settings.AI_API_KEY
+    # Lê as chaves do objeto 'settings'
+    vt_key = getattr(settings, 'VT_API_KEY', None)
+    osm_key = getattr(settings, 'OSM_API_KEY', None)
 
     return {
-        'AI_API_KEY': mask_key(ai_key),
-        'AI_PROVIDER_DETECTED': settings.AI_PROVIDER_DETECTED or "Nenhum",
         'VT_API_KEY': mask_key(vt_key),
-        'OSM_API_KEY': mask_key(settings.OSM_API_KEY),
-        'GOOGLE_SAFE_BROWSING_API_KEY': mask_key(settings.GOOGLE_SAFE_BROWSING_API_KEY),
-        'ELASTIC_API_KEY': mask_key(settings.ELASTIC_API_KEY),
-        'ELASTIC_API_URL': settings.ELASTIC_API_URL or "Não definida",
-        'WAZUH_API_KEY': mask_key(settings.WAZUH_API_KEY),
-        'WAZUH_API_URL': settings.WAZUH_API_URL or "Não definida",
-        'all_set': bool(vt_key and ai_key)
+        'OSM_API_KEY': mask_key(osm_key),
     }
 
 def save_env_file(env_path: str, new_vars: dict) -> bool:

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import logging
 import threading
 import json
@@ -31,7 +31,6 @@ from . import local_analysis
 from . import utils
 from . import audit_utils
 from .analysis_backends import get_file_analysis_backends, get_url_analysis_backends, submit_osm_report
-from .siem_integrations import send_to_siem
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +39,7 @@ class AIProviderError(Exception):
     pass
 
 # AI Cache disabled in Tier 0
+news_cache = {}
 
 
 
@@ -313,9 +313,8 @@ async def run_file_analysis(content: bytes, filename: str, ai_provider: str = No
     final_result['mitre_attack'] = utils.get_mitre_attack_info(final_result)
     final_result['ai_analysis'] = await get_ai_explanation(final_result, ai_provider)
 
-    # 6. Persistência e SIEM
+    # 6. Persistência
     result_id = await asyncio.to_thread(database.save_analysis, final_result)
-    await send_to_siem(final_result)
     
     return result_id
 
@@ -352,9 +351,8 @@ async def run_url_analysis(url: str, ai_provider: str = None) -> str:
     # 4. Análise com IA
     final_result['ai_analysis'] = await get_ai_explanation(final_result, ai_provider)
 
-    # 5. Persistência e Integração SIEM
+    # 5. Persistência
     result_id = await asyncio.to_thread(database.save_analysis, final_result)
-    await send_to_siem(final_result)
     logger.info(f"Análise concluída para {url}. ID do resultado: {result_id}")
     return result_id
 
@@ -570,7 +568,6 @@ async def run_network_analysis(mode: str = 'quick', cidr: str = None, ai_provide
     result["mitre_attack"] = utils.get_mitre_attack_info(result)
     result["ai_analysis"] = await get_ai_explanation(result, ai_provider)
     save_id = await asyncio.to_thread(database.save_analysis, {"filename": result["network_cidr"], **result})
-    await send_to_siem(result)
     return save_id
 
 async def update_settings(form_data: Dict[str, str]) -> Tuple[bool, str, Dict[str, Any]]:
@@ -590,11 +587,6 @@ async def update_settings(form_data: Dict[str, str]) -> Tuple[bool, str, Dict[st
     single_key_validators = {
         'VT_API_KEY': (None, "VirusTotal"), # VT não tem validador online simples por enquanto
         'OSM_API_KEY': (osm_validate_key, "OpenSourceMalware"),
-        'GOOGLE_SAFE_BROWSING_API_KEY': (google_safe_browsing_validate_key, "Google Safe Browsing"),
-        'ELASTIC_API_KEY': (None, "Elastic API Key"),
-        'ELASTIC_API_URL': (None, "Elastic API URL"),
-        'WAZUH_API_KEY': (None, "Wazuh API Key"),
-        'WAZUH_API_URL': (None, "Wazuh API URL"),
     }
 
     for key_name, (validator, friendly_name) in single_key_validators.items():
@@ -615,36 +607,6 @@ async def update_settings(form_data: Dict[str, str]) -> Tuple[bool, str, Dict[st
             else:
                 invalid_key_messages.append(f"Chave {friendly_name}: {message}")
 
-    # --- Lida com as chaves de IA (lógica mais complexa de múltiplos provedores) ---
-    ai_keys_input = form_data.get('AI_API_KEY', '').strip()
-    
-    # Apenas processa se novas chaves de IA foram inseridas
-    if ai_keys_input:
-        ai_keys = [key for key in re.split(r'[\n, ]+', ai_keys_input) if key]
-        valid_ai_keys = []
-        detected_providers = set()
-
-        if ai_keys:
-            for key in ai_keys:
-                provider, message = await asyncio.to_thread(detect_provider, key)
-                if provider:
-                    valid_ai_keys.append(key)
-                    detected_providers.add(provider)
-                    messages.append(f"Chave de IA para {provider.upper()} (final {key[-4:]}) validada.")
-                else:
-                    invalid_key_messages.append(f"Chave de IA com final {key[-4:]}: {message}")
-
-            if valid_ai_keys:
-                all_valid_keys_str = ",".join(valid_ai_keys)
-                if all_valid_keys_str != current_env.get('AI_API_KEY'):
-                    current_env['AI_API_KEY'] = all_valid_keys_str
-                    # Mantém o provedor detectado anteriormente se nenhum novo for detectado
-                    if detected_providers:
-                        current_env['AI_PROVIDER_DETECTED'] = list(detected_providers)[0]
-                    messages.append("Configurações de IA salvas.")
-                    updated = True
-            # Se nenhuma chave de IA válida foi fornecida, não fazemos nada, mantendo as antigas.
-            
     # Adiciona mensagens de erro das chaves inválidas
     if invalid_key_messages:
         messages.append("Algumas chaves falharam na validação:")

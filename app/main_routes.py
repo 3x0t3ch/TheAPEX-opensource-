@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Rotas principais da aplicação (páginas web).
 
@@ -112,6 +112,7 @@ async def index():
     """Renderiza a página de módulos (Malware, Network)."""
     try:
         key_status = utils.get_key_status()
+        stats = {}
         try:
             net_info = await services.get_local_network_info()
             stats['network'] = net_info
@@ -127,8 +128,10 @@ async def index():
             module=selected_module
         )
     except Exception as e:
-        logger.error(f"Erro na rota /modules: {e}", exc_info=True)
-        return "Erro interno ao carregar módulos.", 500
+        import traceback
+        error_msg = f"Erro na rota /modules: {e}\n{traceback.format_exc()}"
+        logger.error(error_msg)
+        return error_msg, 500
 
 @main_bp.route('/history')
 async def history():
