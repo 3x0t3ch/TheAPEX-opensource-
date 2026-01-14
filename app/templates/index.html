@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 id="module-title">
+        {% if module == 'alerts' %}Alertas Brasil
+        {% elif module == 'network' %}Network Monitor
+        {% elif module == 'audit' %}System Audit
+        {% else %}Malware Analyzer{% endif %}
+    </h1>
+    <p style="color: var(--text-secondary);">
+        {% if module == 'alerts' %}Inteligência de Ameaças Nacionais
+        {% elif module == 'network' %}Análise de Ativos na Rede Local
+        {% elif module == 'audit' %}Auditoria de Segurança Simplificada
+        {% else %}Módulo de Segurança Ativa{% endif %}
+    </p>
+</div>
+
+{% if module == 'malware' or not module %}
+<div id="module-malware" class="module-section">
+    <div class="glass-card">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(220, 53, 69, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(220, 53, 69, 0.2);">
+                <i class="bi bi-bug-fill" style="color: #ff4d4d; font-size: 20px;"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Malware Analyzer</h3>
+                <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Análise profunda de artefatos suspeitos</p>
+            </div>
+        </div>
+
+        <!-- Upload de Arquivo -->
+        <div style="margin-bottom: 30px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: #fff; font-size: 14px; font-weight: 600;">📁 Análise de Arquivo</h4>
+                <span id="status-badge-malware" class="status-badge status-idle">Aguardando</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                 <div style="display:none;">
+                    <option value="groq" selected>Groq Llama</option>
+                 </div>
+                <button class="action-btn" onclick="document.getElementById('file-upload').click()" style="flex: 1;">SELECIONAR EXECUTÁVEL OU SCRIPT</button>
+                <input type="file" id="file-upload" style="display: none" onchange="handleFileSelect(this)">
+            </div>
+            <div class="console-output" id="output-malware" style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+                <i class="bi bi-info-circle" style="margin-right: 5px;"></i> Suporta .exe, .dll, .py, .ps1, .bin
+            </div>
+        </div>
+
+        <!-- Análise de URL -->
+        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: #fff; font-size: 14px; font-weight: 600;">🌐 Análise de URL</h4>
+                <span class="status-badge status-idle" id="status-badge-url">Pronto</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <input id="url-input" class="form-control" placeholder="https://exemplo.com/malware" style="flex: 1; margin-bottom: 0;">
+                <button class="action-btn" onclick="analyzeUrl()">ANALISAR URL</button>
+            </div>
+            <div class="console-output" id="output-url" style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+                <i class="bi bi-shield-check" style="margin-right: 5px;"></i> Verificação em tempo real com reputação global.
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+
+{% if module == 'alerts' %}
+<div id="module-alerts" class="module-section">
+    <div class="glass-card">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(0, 212, 255, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0, 212, 255, 0.2);">
+                <i class="bi bi-geo-alt-fill" style="color: #00d4ff; font-size: 20px;"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Alertas Brasil</h3>
+                <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Tendências e inteligência de ameaças nacionais</p>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- Coluna da Esquerda: Lista de Alertas Oficiais -->
+            <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h4 style="margin: 0; color: #fff; font-size: 14px; font-weight: 600;">📡 Alertas Recentes</h4>
+                    <span class="status-badge status-idle" id="status-badge-alerts">Pronto</span>
+                </div>
+                
+                <div id="alerts-list-container" style="display: flex; flex-direction: column; gap: 12px; min-height: 200px;">
+                    <p style="color: var(--text-secondary); font-size: 13px; text-align: center; padding: 40px 0;">
+                        Clique no botão abaixo para buscar os alertas oficiais do ano atual.
+                    </p>
+                </div>
+
+                <button class="action-btn" onclick="loadBrazilAlerts()" style="width: 100%; margin-top: 20px;">🔎 CONSULTAR ALERTAS</button>
+            </div>
+
+            <!-- Coluna da Direita: Análise Inteligente -->
+            <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
+                    <i class="bi bi-robot" style="font-size: 20px; color: #00d4ff;"></i>
+                    <h4 style="margin: 0; color: #fff; font-size: 14px; font-weight: 600;">Análise Inteligente</h4>
+                </div>
+                
+                <div id="ai-interpretation-content" style="line-height: 1.6; font-size: 13px; color: var(--text-secondary);">
+                    Resumo IA desativado nesta versão (Tier 0).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadBrazilAlerts() {
+            const alertsList = document.getElementById('alerts-list-container');
+            const badge = document.getElementById('status-badge-alerts');
+            const aiContent = document.getElementById('ai-interpretation-content');
+            
+            badge.className = 'status-badge status-running';
+            badge.innerText = 'CONSULTANDO...';
+            
+            alertsList.innerHTML = `
+                <div style="text-align: center; padding: 40px 0;">
+                    <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+                    <p style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">Coletando dados oficiais do CTIR Gov...</p>
+                </div>`;
+                
+            aiContent.innerHTML = `
+                <div class="placeholder-glow">
+                    <span class="placeholder col-12" style="background: rgba(255,255,255,0.05);"></span>
+                    <span class="placeholder col-10" style="background: rgba(255,255,255,0.05);"></span>
+                    <span class="placeholder col-8" style="background: rgba(255,255,255,0.05);"></span>
+                </div>`;
+
+            try {
+                // Adicionamos um timestamp para evitar cache do navegador
+                const resp = await fetch('/api/threats/brasil?t=' + Date.now(), { method: 'GET' });
+                const data = await resp.json();
+                
+                if (!resp.ok || !data.ok) throw new Error(data.error || 'Erro no servidor');
+                
+                // 1. Renderiza a lista de alertas (Sempre exibe se houver dados)
+                if (data.items && data.items.length > 0) {
+                    alertsList.innerHTML = '';
+                    data.items.forEach(it => {
+                        const card = document.createElement('a');
+                        card.href = it.url;
+                        card.target = '_blank';
+                        card.style.textDecoration = 'none';
+                        card.style.display = 'block';
+                        card.style.padding = '12px';
+                        card.style.background = 'rgba(255,255,255,0.03)';
+                        card.style.border = '1px solid var(--glass-border)';
+                        card.style.borderRadius = '12px';
+                        card.style.transition = 'all 0.2s';
+                        
+                        card.onmouseover = () => { card.style.borderColor = 'var(--accent-color)'; card.style.background = 'rgba(255,255,255,0.05)'; };
+                        card.onmouseout = () => { card.style.borderColor = 'var(--glass-border)'; card.style.background = 'rgba(255,255,255,0.03)'; };
+                        
+                        const source = 'CTIR';
+                        const sourceColor = '#00d4ff';
+                        
+                        card.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 10px; font-weight: 700; color: ${sourceColor}; text-transform: uppercase;">${source}</span>
+                                <span style="font-size: 10px; color: var(--text-secondary);">${it.date}</span>
+                            </div>
+                            <div style="font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 5px; line-height: 1.3;">${it.title.split(']')[1] || it.title}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${it.summary}</div>
+                        `;
+                        alertsList.appendChild(card);
+                    });
+                } else {
+                    alertsList.innerHTML = '<p style="text-align: center; padding: 40px 0; color: var(--text-secondary);">Nenhum alerta encontrado.</p>';
+                }
+
+                // 2. Renderiza a interpretação da IA
+                if (data.ai_analysis) {
+                    aiContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(data.ai_analysis) : data.ai_analysis;
+                } else {
+                    aiContent.innerHTML = "<p style='color: var(--text-secondary);'>O resumo inteligente está desativado na versão Core (Tier 0). Consulte a documentação para habilitar em tiers superiores.</p>";
+                }
+
+                badge.className = 'status-badge status-success';
+                badge.innerText = 'ATUALIZADO';
+            } catch(e) {
+                console.error(e);
+                alertsList.innerHTML = `<p style="color: #ff4d4d; text-align: center; padding: 40px 0;">[ERROR] ${e.message}</p>`;
+                aiContent.innerHTML = `<p style="color: var(--text-secondary);">Análise IA não disponível no Tier 0.</p>`;
+                badge.className = 'status-badge status-error';
+                badge.innerText = 'FALHA';
+            }
+        }
+    </script>
+</div>
+{% endif %}
+{% if module == 'network' %}
+<div id="module-network" class="module-section">
+    <div class="glass-card">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(0, 223, 216, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0, 223, 216, 0.2);">
+                <i class="bi bi-broadcast-pin" style="color: var(--accent-color); font-size: 20px;"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Network Monitor</h3>
+                <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Varredura e identificação de ativos locais</p>
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: #fff; font-size: 14px; font-weight: 600;">🔍 Varredura de Rede</h4>
+                <span id="status-badge-network" class="status-badge status-idle">Pronto</span>
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                <input id="network-cidr" class="form-control" placeholder="Ex: 192.168.1.0/24" style="flex: 1; margin-bottom: 0;">
+                <button class="action-btn" onclick="runNetworkScan('quick')">VARREDURA RÁPIDA</button>
+            </div>
+            <div class="console-output" id="output-network" style="min-height: 100px; font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
+                [INFO] Clique em Varredura Rápida para iniciar.
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if module == 'audit' %}
+<div id="module-audit" class="module-section">
+    <div class="glass-card">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(25, 135, 84, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(25, 135, 84, 0.2);">
+                <i class="bi bi-shield-check" style="color: #198754; font-size: 20px;"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600;">System Audit</h3>
+                <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Verificação de conformidade e segurança local</p>
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: #fff; font-size: 14px; font-weight: 600;">🛡️ Auditoria Simplificada</h4>
+                <span id="status-badge-audit" class="status-badge status-idle">Pronto</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+                Esta versão Core realiza uma auditoria rápida de segurança, verificando o status do firewall, informações da máquina e contagem de processos/serviços ativos.
+            </p>
+            <button class="action-btn" onclick="runAuditScan()" style="width: 100%;">INICIAR AUDITORIA</button>
+            <div class="console-output" id="output-audit" style="margin-top: 15px; min-height: 80px; font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
+                [INFO] Aguardando comando...
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const currentModule = "{{ module or 'malware' }}";
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (currentModule === 'network') {
+            try {
+                const resp = await fetch('/api/network/local');
+                const ct = resp.headers.get('content-type') || '';
+                if (resp.ok) {
+                    const data = ct.includes('application/json') ? await resp.json() : JSON.parse(await resp.text());
+                    const cidrInput = document.getElementById('network-cidr');
+                    if (cidrInput && data.cidr) {
+                        cidrInput.value = data.cidr;
+                    }
+                    const output = document.getElementById('output-network');
+                    if (output) {
+                        output.innerText = `[INFO] IP: ${data.ip} | Máscara: ${data.mask} | CIDR sugerido: ${data.cidr}\n` + (output.innerText || "");
+                    }
+                }
+            } catch (e) {
+                const output = document.getElementById('output-network');
+                if (output) output.innerText = `[WARN] Falha ao detectar IP/CIDR automaticamente: ${e.message}\n` + (output.innerText || "");
+            }
+        }
+    });
+
+    async function handleFileSelect(input) {
+        if (input.files.length === 0) return;
+        
+        const file = input.files[0];
+        const output = document.getElementById('output-malware');
+        const badge = document.getElementById('status-badge-malware');
+
+        output.innerText = `[INFO] Iniciando upload de: ${file.name} (${(file.size/1024).toFixed(2)} KB)...\n`;
+        badge.className = 'status-badge status-running';
+        badge.innerText = 'ANALISANDO...';
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('csrf_token', csrfToken);
+
+        try {
+            const response = await fetch('/api/analyze/file', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+            });
+
+            const contentType = response.headers.get('content-type') || '';
+            if (!response.ok) {
+                const err = contentType.includes('application/json') ? await response.json() : {error: 'Erro no servidor'};
+                throw new Error(err.error || 'Erro no servidor');
+            }
+
+            const data = await response.json();
+            output.innerText += `[SUCCESS] Análise concluída. ID: ${data.result_id}\nRedirecionando...`;
+            badge.className = 'status-badge status-success';
+            badge.innerText = 'CONCLUÍDO';
+            
+            setTimeout(() => { window.location.href = `/results/${data.result_id}`; }, 1000);
+        } catch (e) {
+            output.innerText += `[ERROR] Falha: ${e.message}`;
+            badge.className = 'status-badge status-error';
+            badge.innerText = 'ERRO';
+        }
+    }
+
+    async function runNetworkScan(mode) {
+        const output = document.getElementById('output-network');
+        const badge = document.getElementById('status-badge-network');
+        const cidr = document.getElementById('network-cidr').value.trim();
+        
+        output.innerText = `[INFO] Iniciando varredura ${mode} em ${cidr || 'rede local'}...\n`;
+        badge.className = 'status-badge status-running';
+        badge.innerText = 'VARRENDO...';
+
+        try {
+            const response = await fetch('/api/analyze/network', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify({ mode, cidr: cidr || null })
+            });
+            
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || 'Erro no servidor');
+            }
+            const data = await response.json();
+            output.innerText += `[SUCCESS] ID: ${data.result_id}\nRedirecionando...`;
+            badge.className = 'status-badge status-success';
+            badge.innerText = 'FINALIZADO';
+            setTimeout(() => { window.location.href = `/results/${data.result_id}`; }, 800);
+        } catch (e) {
+            output.innerText += `[ERROR] ${e.message}`;
+            badge.className = 'status-badge status-error';
+            badge.innerText = 'FALHA';
+        }
+    }
+
+    async function analyzeUrl() {
+        const output = document.getElementById('output-url');
+        const badge = document.getElementById('status-badge-url');
+        const url = document.getElementById('url-input').value.trim();
+        if (!url) {
+            output.innerText = '[WARN] Informe uma URL válida.';
+            return;
+        }
+        output.innerText = `[INFO] Enviando URL: ${url}\n`;
+        badge.className = 'status-badge status-running';
+        badge.innerText = 'ANALISANDO...';
+        try {
+            const resp = await fetch('/api/analyze/url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify({ url })
+            });
+            if (!resp.ok) {
+                const err = await resp.json();
+                throw new Error(err.error || 'Erro no servidor');
+            }
+            const data = await resp.json();
+            output.innerText += `[SUCCESS] ID: ${data.result_id}\nRedirecionando...`;
+            badge.className = 'status-badge status-success';
+            badge.innerText = 'CONCLUÍDO';
+            setTimeout(() => { window.location.href = `/results/${data.result_id}`; }, 900);
+        } catch(e) {
+            output.innerText += `[ERROR] ${e.message}`;
+            badge.className = 'status-badge status-error';
+            badge.innerText = 'FALHA';
+        }
+    }
+
+    async function runAuditScan() {
+        const output = document.getElementById('output-audit');
+        const badge = document.getElementById('status-badge-audit');
+        
+        output.innerText = "[INFO] Iniciando auditoria simplificada...\n";
+        badge.className = 'status-badge status-running';
+        badge.innerText = 'AUDITANDO...';
+
+        try {
+            const response = await fetch('/api/scan/audit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify({})
+            });
+            
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || 'Erro no servidor');
+            }
+            const data = await response.json();
+            output.innerText += `[SUCCESS] Auditoria concluída. ID: ${data.analysis_id}\nRedirecionando...`;
+            badge.className = 'status-badge status-success';
+            badge.innerText = 'CONCLUÍDO';
+            setTimeout(() => { window.location.href = `/results/${data.analysis_id}`; }, 1000);
+        } catch (e) {
+            output.innerText += `[ERROR] ${e.message}`;
+            badge.className = 'status-badge status-error';
+            badge.innerText = 'FALHA';
+        }
+    }
+</script>
+{% endblock %}

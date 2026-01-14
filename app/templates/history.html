@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico de Atividades{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Histórico de Análises</h1>
+    <p style="color: var(--text-secondary);">Registro completo de operações de análise.</p>
+</div>
+
+<div style="margin-bottom: 15px;">
+    <form method="POST" action="{{ url_for('main.history_clear') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="action-btn" style="background-color: #b00020;">🗑️ Apagar Todo o Histórico</button>
+    </form>
+</div>
+
+<div class="glass-card">
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Identificador</th>
+                    <th>Tipo</th>
+                    <th>Veredito</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analysis in analyses %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ analysis.item_identifier }}
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary">{{ analysis.item_type }}</span>
+                    </td>
+                    <td>
+                        <span class="badge 
+                            {% if analysis.final_verdict == 'malicious' %}bg-danger
+                            {% elif analysis.final_verdict == 'suspicious' %}bg-warning
+                            {% else %}bg-success{% endif %}">
+                            {{ analysis.final_verdict | capitalize }}
+                        </span>
+                    </td>
+                    <td>{{ analysis.created_at | int | strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('main.results', report_id=analysis.id) }}" class="action-btn" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">Ver Detalhes</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        Nenhuma análise encontrada no histórico.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

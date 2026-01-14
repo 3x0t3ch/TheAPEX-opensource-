@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Perguntas Frequentes (FAQ){% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Perguntas Frequentes</h1>
+    <p style="color: var(--text-secondary);">Entenda como a plataforma funciona.</p>
+</div>
+
+<style>
+    details {
+        margin-bottom: 15px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 8px;
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+    }
+    
+    summary {
+        padding: 15px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.02);
+        transition: background 0.2s;
+    }
+    
+    summary:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    details[open] summary {
+        border-bottom: 1px solid var(--glass-border);
+        background: rgba(76, 76, 255, 0.1);
+    }
+    
+    .faq-content {
+        padding: 20px;
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    .faq-content ul {
+        margin-top: 10px;
+        padding-left: 20px;
+    }
+    
+    .faq-content li {
+        margin-bottom: 5px;
+    }
+
+    .faq-content a {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+
+    .faq-content a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="glass-card">
+    <details open>
+        <summary>Como funciona a análise?</summary>
+        <div class="faq-content">
+            A análise é realizada em múltiplas etapas:
+            <ul>
+                <li><strong>Análise Multi-Fonte:</strong> Consultamos APIs como VirusTotal e Google Safe Browsing simultaneamente.</li>
+                <li><strong>Análise Estática Local:</strong> Verificamos o arquivo localmente (hash SHA256, tipo de arquivo) antes de enviar dados externos.</li>
+                <li><strong>Inteligência Artificial:</strong> Utilizamos modelos avançados (Gemini, Groq) para interpretar os dados técnicos e gerar um resumo executivo em linguagem natural.</li>
+            </ul>
+        </div>
+    </details>
+
+    <details>
+        <summary>O que é a Detecção de Phishing Avançada?</summary>
+        <div class="faq-content">
+            O sistema identifica URLs que utilizam caracteres especiais (como cirílicos) para se passar por domínios legítimos. Essa técnica, conhecida como ataque de homógrafo, é comum em tentativas de phishing e é detectada automaticamente pela nossa ferramenta.
+        </div>
+    </details>
+
+    <details>
+        <summary>O que significa a pontuação de risco?</summary>
+        <div class="faq-content">
+            A pontuação de risco é um cálculo consolidado que combina os vereditos de todas as ferramentas de segurança consultadas. Ela varia de 0 a 100, onde valores mais altos indicam uma maior probabilidade de o arquivo ou URL ser malicioso.
+        </div>
+    </details>
+
+    <details>
+        <summary>Guia Passo-a-Passo: Como obter cada API Key</summary>
+        <div class="faq-content">
+            <p>Siga estas instruções para obter as chaves necessárias gratuitamente:</p>
+            
+            <div style="margin-top: 15px;">
+                <strong>1. VirusTotal (Análise de Malware)</strong>
+                <ul>
+                    <li>Cadastre-se em <a href="https://www.virustotal.com/gui/join-us" target="_blank">VirusTotal Join Us</a>.</li>
+                    <li>Após logar, clique no seu perfil (canto superior direito) e vá em <strong>"API Key"</strong>.</li>
+                    <li>Copie a chave exibida em "Personal API Key".</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <strong>2. Groq (Inteligência Artificial - Recomendado)</strong>
+                <ul>
+                    <li>Acesse <a href="https://console.groq.com/keys" target="_blank">Groq Console</a>.</li>
+                    <li>Faça login (pode usar conta Google).</li>
+                    <li>Clique em <strong>"Create API Key"</strong>, dê um nome e copie a chave gerada.</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <strong>3. Google Gemini (IA Alternativa)</strong>
+                <ul>
+                    <li>Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.</li>
+                    <li>Clique em <strong>"Create API key"</strong>.</li>
+                    <li>Escolha o projeto e copie sua chave.</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <strong>4. Google Safe Browsing (Verificação de URLs)</strong>
+                <ul>
+                    <li>Acesse o <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>.</li>
+                    <li>Crie um novo projeto ou selecione um existente.</li>
+                    <li>Vá em <strong>"APIs & Services" > "Library"</strong> e pesquise por "Safe Browsing API". Ative-a.</li>
+                    <li>Vá em <strong>"Credentials" > "Create Credentials" > "API Key"</strong>.</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <strong>5. Elastic Stack & Wazuh (SIEM Locais Gratuito)</strong>
+                <ul>
+                    <li><strong>Elastic:</strong> Rode <code>docker-compose up -d</code>. O Elasticsearch ficará em <code>http://localhost:9200</code> e o Kibana em <a href="http://localhost:5601" target="_blank">http://localhost:5601</a>.</li>
+                    <li><strong>Wazuh:</strong> Incluído no nosso <code>docker-compose.yml</code>! O indexador roda na porta <code>9201</code>, o Manager na <code>55000</code> e o Dashboard na <code>5602</code>.</li>
+                    <li><strong>Dica:</strong> Para o Wazuh funcionar no Windows (Docker Desktop), garanta que o WSL2 tenha memória suficiente (mínimo 4GB recomendados).</li>
+                </ul>
+            </div>
+        </div>
+    </details>
+
+    <details>
+        <summary>Onde configurar as chaves?</summary>
+        <div class="faq-content">
+            Após obter suas chaves, clique no ícone de engrenagem no menu lateral ou acesse a página de <a href="{{ url_for('main.setup') }}">Configurações</a>. Cole as chaves nos campos correspondentes e clique em "Salvar Alterações". A aplicação estará pronta para uso imediato.
+        </div>
+    </details>
+
+    <details>
+        <summary>Integração com SIEM/SOAR (Elastic & Wazuh Locais)</summary>
+        <div class="faq-content">
+            <p>O The APEX suporta integração com o <strong>Elastic Stack</strong> e <strong>Wazuh</strong>, que podem ser utilizados gratuitamente se instalados localmente (Self-Managed).</p>
+            <ul>
+                <li><strong>Setup Automático:</strong> Incluímos um <code>docker-compose.yml</code> na raiz do projeto que configura o Elasticsearch, Kibana, Wazuh Indexer, Manager e Dashboard automaticamente.</li>
+                <li><strong>Requisito Wazuh:</strong> No Linux ou WSL2, você precisa rodar o comando <code>sudo sysctl -w vm.max_map_count=262144</code> antes de iniciar para que o indexador funcione corretamente.</li>
+                <li><strong>Configuração:</strong> Use <code>http://localhost:9200</code> para o Elastic e <code>http://localhost:55000</code> para o Wazuh nas Configurações.</li>
+            </ul>
+            <p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
+                <strong>Nota:</strong> Mantemos a remoção de <strong>Splunk</strong>, <strong>QRadar</strong> e <strong>Microsoft Sentinel</strong> por serem serviços predominantemente pagos ou corporativos.
+            </p>
+        </div>
+    </details>
+</div>
+{% endblock %}
