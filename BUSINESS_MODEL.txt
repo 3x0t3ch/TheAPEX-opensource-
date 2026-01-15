@@ -21,7 +21,7 @@ a operadores qualificados.
 --------------------------------------
 - Público Alvo: Estudantes, Pesquisadores de Segurança, Auditores de Código.
 - Custo: R$ 0,00 / mês.
-- Licença: MIT License (Permissiva).
+- Licença: The APEX Community License (Não-Comercial).
 - Distribuição: Repositório Público GitHub (3x0t3ch/TheAPEX-opensource-).
 - Escopo de Acesso:
   [+] Código Fonte do Backend (Python/Quart).
