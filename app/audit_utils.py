@@ -60,14 +60,21 @@ def _get_hardware_id() -> str:
     """
     try:
         if platform.system() == "Windows":
-            cmd = "wmic csproduct get uuid"
-            output = subprocess.check_output(cmd, shell=True).decode().split()
-            if len(output) >= 2:
-                return output[1]
+            cmd = [
+                "powershell",
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                "(Get-CimInstance -ClassName Win32_ComputerSystemProduct).UUID"
+            ]
+            output = subprocess.check_output(cmd).decode(errors="ignore").strip()
+            parts = [p for p in output.splitlines() if p and "UUID" not in p]
+            if parts:
+                return parts[-1].strip()
     except Exception as e:
         logger.error(f"Erro ao obter Hardware ID: {e}")
-    
-    # Fallback para um ID persistente baseado no MAC se o wmic falhar
+
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, _get_mac_address() + platform.node()))
 
 # Gerenciamento de Criptografia
