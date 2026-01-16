@@ -1,81 +1,76 @@
 # ⚡ THE APEX — Open Core Security Platform (© 2024-2026 The APEX Community)
 
-O **The APEX** é uma plataforma de segurança cibernética de alta performance, projetada para consolidação de inteligência de ameaças, monitoramento de ativos e análise tática. Esta versão **Core** é a fundação tecnológica do projeto, oferecendo um motor totalmente assíncrono e transparente para pesquisadores e auditores.
+## 👁️ Visão Geral
+
+O **The APEX** é uma plataforma de segurança cibernética de alta performance focada em inteligência de ameaças e análise tática. Esta versão **[TIER 0] CORE** serve como a fundação open source do projeto, projetada para pesquisadores, estudantes e auditores de segurança.
+
+**Destaques da Versão Core:**
+- **Malware Analyzer:** Análise estática profunda (PE/ELF), extração de strings e cálculo de entropia.
+- **Network Monitor:** Varredura assíncrona de ativos e descoberta de serviços.
+- **System Audit:** Verificação de integridade e auditoria de segurança local (compatível com Windows 10/11/Server).
+- **Threat Intel:** Integração nativa com feeds de ameaças (ex: CTIR Gov) e serviços de reputação (VirusTotal).
+- **Privacy First:** Processamento local prioritário, garantindo que dados sensíveis permaneçam sob seu controle.
 
 ---
 
-## 🏛️ Modelo Open Core (Tiers)
-
-O ecossistema The APEX é dividido em níveis de acesso para atender desde a pesquisa acadêmica até operações de SOC corporativo:
-
-### [TIER 0] CORE (Open Source) — **ESTA VERSÃO**
-- **Foco:** Pesquisa, Auditoria e Estudo de Malware.
-- **Backend:** Python 3.12+ / Quart (ASGI).
-- **Motores:** Análise estática local (PE/ELF), Detecção de Phishing (Homógrafo).
-- **Reputação:** Integração com VirusTotal e OpenSourceMalware.
-- **Interface:** UI Atlas (Grayscale Edition).
-- **Licença:** MIT (Permissiva).
-
-### [TIER 1] OPERADOR (Professional)
-- **Tudo do Tier 0** +
-- **Interface:** Dashboard Operacional Standard.
-- **Automação:** Relatórios PDF e updates semanais de Threat Intel.
-- **Distribuição:** Container Docker Privado.
-
-### [TIER 2] ENTERPRISE (Elite)
-- **Interface:** **Dark Matter** (Visualização tática em tempo real).
-- **Inteligência:** IA Cognitiva para resumos executivos e correlação de ameaças (BYOK).
-- **Network:** Sniffer de nível de kernel (Kernel-Level Monitoring).
-- **Orquestração:** Multi-API (VT, Bitdefender, CTIR Gov, etc).
-
----
-
-## 🛠️ Funcionalidades da Versão Core
-
-- **Malware Analyzer:** Análise estática de arquivos (Strings, Importações, Entropia) e URLs.
-- **Network Monitor:** Varredura assíncrona de ativos e serviços de rede.
-- **System Audit:** Auditoria de credenciais expostas (Windows Vault) e integridade.
-- **Alertas Brasil:** Integração nativa com feeds de ameaças do CTIR Gov.
-- **Privacy First:** Processamento local prioritário, com consultas externas limitadas a serviços de reputação aprovados.
-
----
-
-## 💻 Stack Tecnológica
-
-- **Backend:** [Quart](https://pgjones.gitlab.io/quart/) (Fast ASGI Framework)
-- **Frontend:** Glassmorphism UI (Vanilla JS & Modern CSS)
-- **Database:** SQLite com acesso assíncrono.
-- **Security:** CSRF Protection, Pydantic Validation, Local Sandboxing.
-
----
-
-## 🔧 Instalação e Execução
+## 🔧 Instalação
 
 ### Pré-requisitos
-- Python 3.12 ou superior.
-- Docker (opcional, para execução via container).
+- **Sistema Operacional:** Windows 10/11 ou Server (Recomendado para auditoria completa).
+- **Python:** Versão 3.12 ou superior.
+- **Permissões:** Acesso de Administrador (para coleta de métricas de sistema via PowerShell).
 
-### Execução Local
-1. Instale as dependências:
+### Passo a Passo
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/3x0t3ch/TheAPEX-opensource-
+   cd TheAPEX-opensource-
+   ```
+
+2. Instale as dependências:
    ```powershell
    pip install -r requirements.txt
    ```
-2. Inicie a aplicação:
+
+---
+
+## 🚀 Uso Rápido
+
+1. **Inicie o Servidor:**
+   Execute o script de inicialização automatizado:
    ```powershell
    python initializer.py
    ```
-3. Acesse no navegador: `http://localhost:5000`
+   *Ou utilize o atalho `iniciar.bat` se preferir.*
 
-### Execução via Docker
-```powershell
-docker-compose up --build -d
-```
+2. **Acesse a Interface:**
+   Abra seu navegador e navegue para:
+   `http://localhost:5000`
+
+3. **Primeiros Passos:**
+   - Navegue até **Audit** para verificar o status de segurança da máquina local.
+   - Use **Analyzer** para submeter arquivos suspeitos para análise estática.
+   - Consulte **Threat Map** para visualizar alertas recentes.
+
+---
+
+## 🏗️ Arquitetura
+
+O The APEX foi construído sobre uma arquitetura moderna e assíncrona, eliminando gargalos de I/O comuns em ferramentas de segurança legadas.
+
+- **Backend:** [Quart](https://pgjones.gitlab.io/quart/) (ASGI Framework) — Performance assíncrona nativa.
+- **Frontend:** Glassmorphism UI — Interface leve construída com Vanilla JS e CSS moderno (sem frameworks pesados).
+- **Database:** SQLite (Async) — Persistência leve e eficiente para implantações locais.
+- **Security:**
+  - Validação rigorosa com Pydantic.
+  - Proteção CSRF/XSS.
+  - Isolamento de execução via subprocessos seguros.
 
 ---
 
 ## ⚖️ Licenciamento
 
-O código contido neste repositório é licenciado sob a **Licença Comunitária The APEX**. Sinta-se à vontade para contribuir, auditar e adaptar a ferramenta para seus propósitos de pesquisa, respeitando o uso não-comercial.
+O código contido neste repositório é licenciado sob a **Licença Comunitária The APEX**.
+Sinta-se à vontade para contribuir, auditar e adaptar a ferramenta para fins de pesquisa e educação (uso não-comercial).
 
----
 *Desenvolvido por [Germano Roberto](https://github.com/GermanoRoberto)*
